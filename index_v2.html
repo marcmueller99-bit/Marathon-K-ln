@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Marathon Köln 2026 – Mein Trainingsplan</title>
+<style>
+:root {
+  --bg:#07101d; --card:#101b2c; --card2:#15243a; --line:#223651;
+  --text:#f6f8fb; --muted:#94a6bd; --accent:#62d39a; --accent2:#73a7ff;
+  --warn:#ffb86b; --hard:#ff7d7d; --easy:#73d7ff; --shadow:0 10px 35px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom));min-height:100vh}
+button,input,textarea{font:inherit}
+.topbar{position:sticky;top:0;z-index:20;padding:calc(10px + env(safe-area-inset-top)) 16px 12px;background:rgba(7,16,29,.88);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.05)}
+.brand{display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:auto}
+.brand h1{font-size:18px;margin:0}
+.badge{font-size:12px;color:#07101d;background:var(--accent);padding:6px 9px;border-radius:99px;font-weight:800}
+main{max-width:760px;margin:auto;padding:14px}
+.hero{background:linear-gradient(145deg,#172c46,#0e1b2e);border:1px solid #284665;border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.09em;font-size:11px;font-weight:800}
+.hero h2{font-size:26px;line-height:1.08;margin:8px 0 5px}
+.hero .date{color:var(--muted);font-size:14px}
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.metric{background:rgba(255,255,255,.055);border-radius:14px;padding:11px}
+.metric b{font-size:18px;display:block} .metric span{color:var(--muted);font-size:11px}
+.actionrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{border:0;border-radius:12px;padding:10px 13px;font-weight:750;background:var(--accent);color:#06150f}
+.btn.secondary{background:#1d3150;color:var(--text)}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:22px 2px 10px}
+.section-title h3{margin:0;font-size:18px} .section-title small{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px}
+.session{position:relative;overflow:hidden}
+.session::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent2)}
+.session.hard::before{background:var(--hard)} .session.long::before{background:var(--warn)} .session.easy::before{background:var(--easy)}
+.session.done{opacity:.58}
+.session-top{display:flex;justify-content:space-between;gap:12px}
+.session h4{margin:2px 0 5px;font-size:16px}
+.meta{color:var(--muted);font-size:13px;line-height:1.35}
+.pill{display:inline-block;margin:7px 5px 0 0;padding:5px 8px;border-radius:99px;background:#1d3150;color:#d7e5f8;font-size:11px;font-weight:700}
+.check{width:26px;height:26px;accent-color:var(--accent)}
+.details{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;line-height:1.48}
+.details.open{display:block}
+.details b{color:#b8cdf0}
+.row{display:grid;grid-template-columns:88px 1fr;gap:9px;margin:7px 0}
+.notes{width:100%;min-height:70px;background:#0a1525;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:8px}
+.weekbar{display:flex;gap:6px;overflow-x:auto;padding:2px 1px 10px;scrollbar-width:none}
+.weekbtn{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--muted);padding:8px 11px;border-radius:12px}
+.weekbtn.active{background:var(--accent);color:#06150f;border-color:var(--accent);font-weight:800}
+.progress-track{height:8px;background:#1a2b43;border-radius:99px;overflow:hidden;margin-top:10px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#80f0bd);transition:.25s}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zone{padding:13px;background:var(--card);border:1px solid var(--line);border-radius:15px}
+.zone b{display:block} .zone span{font-size:12px;color:var(--muted)}
+.race{background:linear-gradient(145deg,#3a2a15,#1f1a13);border-color:#604725}
+.countdown{font-size:28px;font-weight:900;margin-top:5px}
+.nav{position:fixed;z-index:40;bottom:0;left:0;right:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(7,16,29,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.07)}
+.nav-inner{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.nav button{background:transparent;border:0;color:#7890ac;padding:7px 3px;font-size:11px}
+.nav button b{display:block;font-size:20px;margin-bottom:2px}
+.nav button.active{color:var(--accent)}
+.view{display:none} .view.active{display:block}
+.empty{text-align:center;color:var(--muted);padding:24px}
+.today-tag{color:#07101d;background:#ffd66b;padding:3px 7px;border-radius:99px;font-size:10px;font-weight:900}
+@media(max-width:420px){.hero-grid{grid-template-columns:repeat(3,1fr)}.metric{padding:9px}.metric b{font-size:16px}.row{grid-template-columns:76px 1fr}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="brand"><h1>🏃 Marathon Köln 2026</h1><span class="badge">3:25</span></div></div>
+<main>
+<section id="home" class="view active">
+  <div class="hero">
+    <div class="eyebrow">Nächstes Training</div>
+    <h2 id="nextTitle">–</h2>
+    <div class="date" id="nextDate">–</div>
+    <div class="hero-grid">
+      <div class="metric"><b id="nextKm">–</b><span>Distanz</span></div>
+      <div class="metric"><b id="nextPace">–</b><span>Pace</span></div>
+      <div class="metric"><b id="nextDuration">–</b><span>Dauer</span></div>
+    </div>
+    <div class="actionrow">
+      <button class="btn" id="openNext">Details öffnen</button>
+      <button class="btn secondary" onclick="go('plan')">Gesamter Plan</button>
+    </div>
+  </div>
+
+  <div class="section-title"><h3>Fortschritt</h3><small id="progressLabel"></small></div>
+  <div class="card">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="grid2" style="margin-top:12px">
+      <div><div class="eyebrow">Erledigt</div><b id="doneCount" style="font-size:22px">0</b></div>
+      <div><div class="eyebrow">Verbleibend</div><b id="leftKm" style="font-size:22px">0 km</b></div>
+    </div>
+  </div>
+
+  <div class="section-title"><h3>Diese Woche</h3><small id="weekLabel"></small></div>
+  <div id="homeWeek"></div>
+
+  <div class="section-title"><h3>Race Day</h3><small>04.10.2026</small></div>
+  <div class="card race">
+    <div class="eyebrow">Köln Marathon · Ziel 3:25</div>
+    <div class="countdown" id="countdown">–</div>
+    <div class="meta">Zielpace Ø 4:51,5 min/km · gleichmäßig anlaufen · ab km 30 nach Gefühl.</div>
+  </div>
+</section>
+
+<section id="plan" class="view">
+  <div class="section-title"><h3>Trainingsplan</h3><small>10 Wochen</small></div>
+  <div class="weekbar" id="weekBar"></div>
+  <div id="planList"></div>
+</section>
+
+<section id="zones" class="view">
+  <div class="section-title"><h3>Pace-Zonen</h3><small>Orientierung</small></div>
+  <div class="grid2" id="zoneGrid"></div>
+  <div class="card" style="margin-top:12px">
+    <div class="eyebrow">Wetterregel</div>
+    <p class="meta" style="margin-bottom:0">Bei Hitze, Wind oder Höhenmetern RPE und Herzfrequenz über die Pace stellen. Ein lockerer Lauf darf dann deutlich langsamer sein.</p>
+  </div>
+</section>
+
+<section id="race" class="view">
+  <div class="section-title"><h3>Wettkampf</h3><small>04.10.2026</small></div>
+  <div class="card race">
+    <div class="eyebrow">A-Ziel</div>
+    <div class="countdown">3:25:00</div>
+    <div class="meta">Ø 4:51,5 min/km</div>
+  </div>
+  <div class="card">
+    <div class="row"><b>0–5 km</b><span>4:54–4:56 · bewusst defensiv</span></div>
+    <div class="row"><b>5–25 km</b><span>4:50–4:53 · ruhigen Rhythmus halten</span></div>
+    <div class="row"><b>25–35 km</b><span>4:50–4:55 · Energie & Form kontrollieren</span></div>
+    <div class="row"><b>35–42 km</b><span>Nach Gefühl · erst hier aktiv beschleunigen</span></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Fueling</div>
+    <p class="meta">60–75 g Kohlenhydrate/h, sofern im Training vertragen. Erstes Gel nach etwa 20–25 Minuten, danach ungefähr alle 25–30 Minuten. Regelmäßig kleine Schlucke trinken.</p>
+  </div>
+</section>
+</main>
+
+<nav class="nav"><div class="nav-inner">
+<button class="active" data-view="home"><b>⌂</b>Heute</button>
+<button data-view="plan"><b>▤</b>Plan</button>
+<button data-view="zones"><b>◉</b>Zonen</button>
+<button data-view="race"><b>🏁</b>Race</button>
+</div></nav>
+
+<script>
+const sessions = [{"id": 1, "week": 1, "date": "2026-07-28", "day": "Dienstag", "time": "19:00", "end": "20:05", "duration": 65, "type": "Lockerer Dauerlauf", "km": 9.0, "structure": "9 km locker; anschließend 6 × 20 s Steigerungen, jeweils 60–90 s sehr locker.", "pace": "5:45–6:15; Steigerungen schnell, aber nicht sprinten", "intensity": "HF ca. 125–145; RPE 3–4", "goal": "Aerobe Basis festigen und neuromuskulär aktivieren, ohne Ermüdung aufzubauen.", "fuel": "Normale Alltagsverpflegung; bei Hitze Wasser mitnehmen.", "priority": "Mittel"}, {"id": 2, "week": 1, "date": "2026-07-30", "day": "Donnerstag", "time": "19:00", "end": "20:10", "duration": 70, "type": "Intervalle", "km": 13.0, "structure": "3 km einlaufen + Lauf-ABC; 5 × 1 km in 4:20–4:25, dazwischen 400 m traben; 3 km auslaufen.", "pace": "Belastungen 4:20–4:25; Trabpausen 6:00–6:40", "intensity": "RPE 8; letzter Abschnitt kontrolliert, nicht maximal", "goal": "VO₂max, Laufökonomie und Tempohärte verbessern.", "fuel": "2–3 h vorher kohlenhydratreiche Mahlzeit; bei >75 min 20–30 g Kohlenhydrate optional.", "priority": "Hoch"}, {"id": 3, "week": 1, "date": "2026-07-31", "day": "Freitag", "time": "19:00", "end": "19:55", "duration": 55, "type": "Regenerationslauf", "km": 8.0, "structure": "8 km sehr locker, flache Strecke; kein Endspurt.", "pace": "6:10–6:40", "intensity": "HF ca. 115–138; RPE 2–3", "goal": "Durchblutung und Erholung zwischen Qualitätseinheit und langem Lauf.", "fuel": "Keine spezielle Zufuhr nötig; ausreichend trinken.", "priority": "Niedrig"}, {"id": 4, "week": 1, "date": "2026-08-02", "day": "Sonntag", "time": "16:00", "end": "17:40", "duration": 100, "type": "Langer Lauf", "km": 17.0, "structure": "13 km locker, danach 4 km steady. Gleichmäßiger Start, nicht schneller werden als geplant.", "pace": "Locker 5:40–6:00; letzte 4 km 5:10–5:20", "intensity": "RPE 4, am Ende 5; HF überwiegend unter ca. 150", "goal": "Ausdauer und erste Ermüdungsresistenz aufbauen.", "fuel": "Ab 60 min trinken; insgesamt 30–45 g Kohlenhydrate pro Stunde testen.", "priority": "Hoch"}, {"id": 5, "week": 2, "date": "2026-08-03", "day": "Montag", "time": "19:00", "end": "20:00", "duration": 60, "type": "Lockerer Dauerlauf", "km": 10.0, "structure": "10 km entspannt auf flacher Strecke.", "pace": "5:45–6:15", "intensity": "HF 125–145; RPE 3–4", "goal": "Umfang erhöhen, ohne zusätzliche Intensität.", "fuel": "Normal essen und trinken.", "priority": "Mittel"}, {"id": 6, "week": 2, "date": "2026-08-05", "day": "Mittwoch", "time": "19:00", "end": "20:10", "duration": 70, "type": "Schwellenintervalle", "km": 14.0, "structure": "3 km einlaufen; 3 × 2 km in 4:30–4:35, jeweils 3 min lockeres Traben; 4 km auslaufen.", "pace": "Belastungen 4:30–4:35", "intensity": "RPE 7–8; gleichmäßig, kein Sprint im letzten Block", "goal": "Laktatschwelle erhöhen und längeres schnelles Laufen ökonomischer machen.", "fuel": "Vorher kohlenhydratreich essen; Wasser bei Wärme.", "priority": "Hoch"}, {"id": 7, "week": 2, "date": "2026-08-07", "day": "Freitag", "time": "19:00", "end": "20:00", "duration": 60, "type": "Lockerer Dauerlauf", "km": 8.0, "structure": "8 km locker; am Ende 6 × 20 s Steigerungen.", "pace": "5:55–6:25", "intensity": "HF 120–142; RPE 3", "goal": "Erholung plus kurze technische Aktivierung.", "fuel": "Keine spezielle Zufuhr.", "priority": "Niedrig"}, {"id": 8, "week": 2, "date": "2026-08-09", "day": "Sonntag", "time": "11:00", "end": "12:45", "duration": 105, "type": "Langer Lauf mit Steady-Blöcken", "km": 19.0, "structure": "7 km locker; 4 km steady; 1 km locker; 4 km steady; 3 km locker.", "pace": "Locker 5:40–6:00; steady 5:05–5:15", "intensity": "RPE 4–6; HF in steady kontrolliert", "goal": "Belastungswechsel unter zunehmender Ermüdung trainieren.", "fuel": "40–50 g Kohlenhydrate pro Stunde; Trinkstrategie notieren.", "priority": "Hoch"}, {"id": 9, "week": 3, "date": "2026-08-10", "day": "Montag", "time": "19:00", "end": "20:00", "duration": 60, "type": "Lockerer Dauerlauf", "km": 10.0, "structure": "10 km locker, möglichst weicher Untergrund.", "pace": "5:45–6:15", "intensity": "HF 125–145; RPE 3–4", "goal": "Grundlage und Regeneration nach dem langen Lauf.", "fuel": "Normal.", "priority": "Mittel"}, {"id": 10, "week": 3, "date": "2026-08-12", "day": "Mittwoch", "time": "19:00", "end": "20:25", "duration": 85, "type": "Marathonpace-Lauf", "km": 15.0, "structure": "3 km einlaufen; 8 km in Marathonpace; 4 km auslaufen.", "pace": "Marathonpace 4:48–4:55", "intensity": "RPE 6; Atmung kontrolliert, kein Schwellengefühl", "goal": "Zieltempo automatisieren und Laufökonomie bei 3:25-Pace verbessern.", "fuel": "Wie im Wettkampf früh zuführen: nach 30–35 min erstes Gel testen.", "priority": "Hoch"}, {"id": 11, "week": 3, "date": "2026-08-14", "day": "Freitag", "time": "19:00", "end": "19:55", "duration": 55, "type": "Regenerationslauf", "km": 8.0, "structure": "8 km sehr locker; optional 4 kurze Steigerungen nur bei frischen Beinen.", "pace": "6:10–6:40", "intensity": "HF 115–138; RPE 2–3", "goal": "Erholung fördern.", "fuel": "Keine spezielle Zufuhr.", "priority": "Niedrig"}, {"id": 12, "week": 3, "date": "2026-08-16", "day": "Sonntag", "time": "11:00", "end": "13:15", "duration": 135, "type": "Langer Lauf", "km": 23.0, "structure": "17 km locker; letzte 6 km steady.", "pace": "Locker 5:40–6:00; steady 5:10–5:20", "intensity": "RPE 4 bis 6", "goal": "Fettstoffwechsel, muskuläre Ausdauer und kontrolliertes schnelleres Finish.", "fuel": "50–60 g Kohlenhydrate pro Stunde; 400–750 ml Flüssigkeit/h je nach Wetter und Schweißrate.", "priority": "Hoch"}, {"id": 13, "week": 4, "date": "2026-08-17", "day": "Montag", "time": "19:00", "end": "19:55", "duration": 55, "type": "Regenerationslauf", "km": 8.0, "structure": "8 km sehr locker, flach.", "pace": "6:10–6:40", "intensity": "RPE 2–3", "goal": "Entlastungswoche einleiten und Ermüdung abbauen.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 14, "week": 4, "date": "2026-08-19", "day": "Mittwoch", "time": "19:00", "end": "20:10", "duration": 70, "type": "Kurze Intervalle", "km": 12.0, "structure": "3 km einlaufen; 6 × 800 m in 4:10–4:20/km, dazwischen 400 m traben; 2,2 km auslaufen.", "pace": "Belastungen 4:10–4:20", "intensity": "RPE 8; sauberer Laufstil", "goal": "Geschwindigkeit und Laufökonomie erhalten, ohne hohen Gesamtumfang.", "fuel": "Vorher leichter Kohlenhydrat-Snack.", "priority": "Hoch"}, {"id": 15, "week": 4, "date": "2026-08-21", "day": "Freitag", "time": "19:00", "end": "19:50", "duration": 50, "type": "Lockerer Dauerlauf", "km": 8.0, "structure": "8 km locker.", "pace": "5:50–6:20", "intensity": "RPE 3–4", "goal": "Aerobe Grundlage bei geringer Gesamtbelastung.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 16, "week": 4, "date": "2026-08-22", "day": "Samstag", "time": "08:00", "end": "09:45", "duration": 105, "type": "Langer Lauf locker", "km": 17.0, "structure": "17 km durchgehend locker; bewusst ohne Endbeschleunigung.", "pace": "5:45–6:10", "intensity": "RPE 3–4", "goal": "Regeneration sichern und Langlauf-Routine beibehalten.", "fuel": "30–45 g Kohlenhydrate/h reichen; Magen schonen.", "priority": "Mittel"}, {"id": 17, "week": 5, "date": "2026-08-24", "day": "Montag", "time": "19:00", "end": "20:10", "duration": 70, "type": "Lockerer Dauerlauf", "km": 10.0, "structure": "10 km locker; 6 × 20 s Steigerungen.", "pace": "5:45–6:15", "intensity": "RPE 3–4", "goal": "Neuen Belastungsblock vorbereiten.", "fuel": "Normal.", "priority": "Mittel"}, {"id": 18, "week": 5, "date": "2026-08-26", "day": "Mittwoch", "time": "19:00", "end": "20:25", "duration": 85, "type": "Marathonpace-Intervalle", "km": 15.0, "structure": "3 km einlaufen; 2 × 4 km in Marathonpace, dazwischen 1 km locker; 3 km auslaufen.", "pace": "MP 4:48–4:55; Zwischenkilometer 5:50–6:20", "intensity": "RPE 6–7", "goal": "Zieltempo unter kurzer Vorermüdung stabil halten.", "fuel": "Ein Gel vor dem zweiten Block testen; Wettkampfgetränk verwenden.", "priority": "Hoch"}, {"id": 19, "week": 5, "date": "2026-08-28", "day": "Freitag", "time": "19:00", "end": "19:55", "duration": 55, "type": "Regenerationslauf", "km": 8.0, "structure": "8 km sehr locker.", "pace": "6:10–6:40", "intensity": "RPE 2–3", "goal": "Erholung vor dem langen Lauf.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 20, "week": 5, "date": "2026-08-30", "day": "Sonntag", "time": "11:00", "end": "13:25", "duration": 145, "type": "Langer Lauf", "km": 25.0, "structure": "20 km locker; letzte 5 km steady.", "pace": "Locker 5:40–6:00; steady 5:10–5:20", "intensity": "RPE 4–6", "goal": "Muskuläre Ausdauer und Verpflegungsroutine verbessern.", "fuel": "60 g Kohlenhydrate/h anstreben; alle 25–30 min zuführen; Ausrüstung für Köln testen.", "priority": "Hoch"}, {"id": 21, "week": 6, "date": "2026-08-31", "day": "Montag", "time": "19:00", "end": "20:05", "duration": 65, "type": "Lockerer Dauerlauf", "km": 10.0, "structure": "10 km locker.", "pace": "5:50–6:20", "intensity": "RPE 3–4", "goal": "Aktive Erholung nach 25 km.", "fuel": "Normal.", "priority": "Mittel"}, {"id": 22, "week": 6, "date": "2026-09-02", "day": "Mittwoch", "time": "19:00", "end": "20:20", "duration": 80, "type": "Schwellenintervalle", "km": 15.0, "structure": "3 km einlaufen; 4 × 2 km in 4:28–4:35, dazwischen 3 min traben; 2,5 km auslaufen.", "pace": "4:28–4:35", "intensity": "RPE 7–8; Tempo in allen vier Wiederholungen ähnlich", "goal": "Schwellenleistung und Tempohärte stärken.", "fuel": "Kohlenhydratreiche Mahlzeit; 20–30 g während der Einheit optional.", "priority": "Hoch"}, {"id": 23, "week": 6, "date": "2026-09-03", "day": "Donnerstag", "time": "08:00", "end": "09:00", "duration": 60, "type": "Lockerer Dauerlauf", "km": 8.0, "structure": "8 km locker; 6 × 20 s Steigerungen.", "pace": "5:55–6:25", "intensity": "RPE 3", "goal": "Beine aktivieren, aber für Sonntag frisch bleiben.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 24, "week": 6, "date": "2026-09-05", "day": "Samstag", "time": "11:00", "end": "13:40", "duration": 160, "type": "Langer Lauf mit Marathonpace", "km": 28.0, "structure": "8 km locker; 4 km MP; 1 km locker; 4 km MP; 1 km locker; 4 km MP; 6 km locker.", "pace": "Locker 5:40–6:05; MP 4:48–4:55", "intensity": "RPE 4 bis 7; MP-Blöcke kontrolliert", "goal": "Zieltempo unter Ermüdung, Glykogenmanagement und mentale Struktur trainieren.", "fuel": "60–75 g Kohlenhydrate/h; gleiche Gels und Getränke wie geplant für Köln.", "priority": "Sehr hoch"}, {"id": 25, "week": 7, "date": "2026-09-07", "day": "Montag", "time": "19:00", "end": "20:00", "duration": 60, "type": "Regenerationslauf", "km": 9.0, "structure": "9 km sehr locker.", "pace": "6:05–6:35", "intensity": "RPE 2–3", "goal": "Erholung nach dem spezifischen 28-km-Lauf.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 26, "week": 7, "date": "2026-09-09", "day": "Mittwoch", "time": "19:00", "end": "20:25", "duration": 85, "type": "Marathonpace-Lauf", "km": 16.0, "structure": "3 km einlaufen; 10 km in Marathonpace; 3 km auslaufen.", "pace": "4:48–4:55", "intensity": "RPE 6–7; Pace und Atmung stabil", "goal": "Längster zusammenhängender MP-Block und wichtiger Formcheck.", "fuel": "Gel nach ca. 30 min; Wettkampfgetränk testen.", "priority": "Sehr hoch"}, {"id": 27, "week": 7, "date": "2026-09-11", "day": "Freitag", "time": "19:00", "end": "20:00", "duration": 60, "type": "Lockerer Dauerlauf", "km": 8.0, "structure": "8 km locker; 4–6 kurze Steigerungen.", "pace": "5:55–6:25", "intensity": "RPE 3", "goal": "Lockerung vor der Generalprobe.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 28, "week": 7, "date": "2026-09-13", "day": "Sonntag", "time": "11:00", "end": "13:55", "duration": 175, "type": "Generalprobe – langer Lauf", "km": 31.0, "structure": "17 km locker; 10 km in Marathonpace; 4 km locker auslaufen. Wettkampfschuhe, Kleidung und Frühstück testen.", "pace": "Locker 5:40–6:05; MP 4:48–4:55", "intensity": "RPE bis maximal 7; kein Rennen", "goal": "Wichtigster spezifischer Reiz: Tempo, Verpflegung und Technik unter Ermüdung prüfen.", "fuel": "60–75 g Kohlenhydrate/h; vollständiger Rennplan. Kein Experiment.", "priority": "Sehr hoch"}, {"id": 29, "week": 8, "date": "2026-09-14", "day": "Montag", "time": "19:00", "end": "19:50", "duration": 50, "type": "Lockerer Dauerlauf", "km": 8.0, "structure": "8 km locker.", "pace": "5:55–6:25", "intensity": "RPE 3", "goal": "Taper beginnen und Erholung fördern.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 30, "week": 8, "date": "2026-09-16", "day": "Mittwoch", "time": "19:00", "end": "20:20", "duration": 80, "type": "Intervalle kontrolliert", "km": 14.0, "structure": "3 km einlaufen; 5 × 1 km in 4:15–4:20, dazwischen 400 m traben; 4,4 km auslaufen.", "pace": "4:15–4:20", "intensity": "RPE 8, aber mit Reserven", "goal": "Schnelligkeit erhalten, ohne zu viel Ermüdung zu erzeugen.", "fuel": "Normal; bei Wärme Wasser.", "priority": "Hoch"}, {"id": 31, "week": 8, "date": "2026-09-18", "day": "Freitag", "time": "19:00", "end": "19:55", "duration": 55, "type": "Regenerationslauf", "km": 8.0, "structure": "8 km sehr locker.", "pace": "6:10–6:40", "intensity": "RPE 2–3", "goal": "Frische weiter aufbauen.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 32, "week": 8, "date": "2026-09-20", "day": "Sonntag", "time": "11:00", "end": "12:50", "duration": 110, "type": "Marathonspezifischer Lauf", "km": 21.0, "structure": "5 km locker; 12 km in Marathonpace; 4 km locker.", "pace": "MP 4:48–4:55", "intensity": "RPE 6–7", "goal": "Letzter längerer Zieltempo-Check bei bereits reduziertem Umfang.", "fuel": "50–65 g Kohlenhydrate/h; Rennrhythmus üben.", "priority": "Sehr hoch"}, {"id": 33, "week": 9, "date": "2026-09-21", "day": "Montag", "time": "19:00", "end": "19:45", "duration": 45, "type": "Lockerer Dauerlauf", "km": 7.0, "structure": "7 km locker.", "pace": "5:55–6:25", "intensity": "RPE 3", "goal": "Bewegung erhalten, Ermüdung abbauen.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 34, "week": 9, "date": "2026-09-23", "day": "Mittwoch", "time": "19:00", "end": "19:55", "duration": 55, "type": "Marathonpace-Aktivierung", "km": 10.0, "structure": "2 km einlaufen; 6 km in Marathonpace; 2 km auslaufen.", "pace": "4:48–4:55", "intensity": "RPE 6; bewusst entspannt", "goal": "Zieltempo erinnern, ohne neue Fitness erzwingen zu wollen.", "fuel": "Normale Mahlzeit; kein aggressives Fueling nötig.", "priority": "Hoch"}, {"id": 35, "week": 9, "date": "2026-09-25", "day": "Freitag", "time": "19:00", "end": "19:50", "duration": 50, "type": "Regenerationslauf", "km": 6.0, "structure": "6 km sehr locker; am Ende 4 × 20 s Steigerungen.", "pace": "6:10–6:40", "intensity": "RPE 2–3", "goal": "Beine locker und reaktionsfähig halten.", "fuel": "Normal.", "priority": "Niedrig"}, {"id": 36, "week": 9, "date": "2026-09-27", "day": "Sonntag", "time": "11:00", "end": "12:30", "duration": 90, "type": "Kurzer langer Lauf", "km": 15.0, "structure": "12 km locker; letzte 3 km in Marathonpace.", "pace": "Locker 5:45–6:10; MP 4:48–4:55", "intensity": "RPE 3–6", "goal": "Letzte längere Aktivierung ohne relevante Restermüdung.", "fuel": "30–45 g Kohlenhydrate/h optional; nichts Neues.", "priority": "Mittel"}, {"id": 37, "week": 10, "date": "2026-09-28", "day": "Montag", "time": "19:00", "end": "19:45", "duration": 45, "type": "Lockerer Dauerlauf", "km": 6.0, "structure": "6 km locker; 4 × 20 s Steigerungen.", "pace": "5:55–6:25", "intensity": "RPE 3", "goal": "Beine aktiv halten.", "fuel": "Normal essen; Kohlenhydrate nicht unnötig reduzieren.", "priority": "Niedrig"}, {"id": 38, "week": 10, "date": "2026-09-30", "day": "Mittwoch", "time": "19:00", "end": "19:40", "duration": 40, "type": "Marathonpace-Aktivierung", "km": 7.0, "structure": "2 km locker; 3 km Marathonpace; 2 km locker.", "pace": "MP 4:48–4:55", "intensity": "RPE 5–6; soll leicht wirken", "goal": "Letzter Rhythmusreiz.", "fuel": "Normal; gut hydriert starten.", "priority": "Mittel"}, {"id": 39, "week": 10, "date": "2026-10-02", "day": "Freitag", "time": "19:00", "end": "19:35", "duration": 35, "type": "Shake-out", "km": 4.5, "structure": "4,5 km sehr locker; 4 × 15–20 s kurze Steigerungen.", "pace": "6:05–6:35", "intensity": "RPE 2–3", "goal": "Spannung lösen und Nervosität reduzieren.", "fuel": "Keine Experimente; normal trinken.", "priority": "Niedrig"}, {"id": 40, "week": 10, "date": "2026-10-04", "day": "Sonntag", "time": "11:00", "end": "14:25", "duration": 205, "type": "WETTKAMPF – Köln Marathon", "km": 42.195, "structure": "Erste 5 km minimal defensiv; danach Zieltempo stabilisieren. Ab km 30 nur bei gutem Gefühl beschleunigen.", "pace": "Ziel Ø 4:51,5; Start 4:54–4:56, dann 4:50–4:53", "intensity": "RPE 5–6 bis HM, 7 bis km 32, danach nach Gefühl", "goal": "A-Ziel 3:25. Gleichmäßiges Pacing und Energiezufuhr sind wichtiger als frühe Zeitgewinne.", "fuel": "60–75 g Kohlenhydrate/h; erstes Gel nach 20–25 min, dann etwa alle 25–30 min; an Stationen trinken.", "priority": "Wettkampf"}];
+const zones = [["Regeneration", "6:10–6:40", "RPE 2–3", "Erholung"], ["Locker", "5:45–6:15", "RPE 3–4", "Aerobe Grundlage"], ["Steady", "5:05–5:20", "RPE 5–6", "Ermüdungsresistenz"], ["Marathonpace", "4:48–4:55", "RPE 6–7", "Zieltempo 3:25"], ["Schwelle", "4:28–4:35", "RPE 7–8", "Laktatschwelle"], ["Intervalle", "4:10–4:25", "RPE 8–9", "VO₂max / Laufökonomie"]];
+const stateKey = "marathon-koeln-mobile-v2";
+let state = JSON.parse(localStorage.getItem(stateKey) || '{}');
+let selectedWeek = null;
+
+function localToday(){
+  const d = new Date();
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function dObj(s){return new Date(s+"T12:00:00")}
+function fmtDate(s){return dObj(s).toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"2-digit"})}
+function classFor(s){
+  const t=s.type.toLowerCase();
+  if(t.includes("langer")||t.includes("generalprobe")||t.includes("wettkampf")) return "long";
+  if(t.includes("interval")||t.includes("schwelle")||t.includes("marathonpace")) return "hard";
+  return "easy";
+}
+function save(){localStorage.setItem(stateKey, JSON.stringify(state))}
+function isDone(id){return !!state["done_"+id]}
+function note(id){return state["note_"+id]||""}
+
+function sessionCard(s, compact=false){
+  const today = localToday();
+  const todayTag = s.date===today ? `<span class="today-tag">HEUTE</span>` : "";
+  return `<article class="card session ${classFor(s)} ${isDone(s.id)?"done":""}" data-id="${s.id}">
+    <div class="session-top">
+      <div>
+        <div class="eyebrow">Woche ${s.week} · ${fmtDate(s.date)} · ${s.time}–${s.end} ${todayTag}</div>
+        <h4>${s.type}</h4>
+        <div class="meta">${String(s.km).replace(".",",")} km · ${s.duration} min · ${s.pace}</div>
+      </div>
+      <input class="check" type="checkbox" data-check="${s.id}" ${isDone(s.id)?"checked":""}>
+    </div>
+    <span class="pill">${s.priority}</span>
+    <span class="pill">${s.intensity}</span>
+    ${compact ? "" : `<button class="btn secondary detailsBtn" data-open="${s.id}" style="margin-top:10px;padding:7px 10px">Details</button>
+    <div class="details" id="details-${s.id}">
+      <div class="row"><b>Aufbau</b><span>${s.structure}</span></div>
+      <div class="row"><b>Pace</b><span>${s.pace}</span></div>
+      <div class="row"><b>Intensität</b><span>${s.intensity}</span></div>
+      <div class="row"><b>Ziel</b><span>${s.goal}</span></div>
+      <div class="row"><b>Fueling</b><span>${s.fuel}</span></div>
+      <textarea class="notes" data-note="${s.id}" placeholder="Eigene Notiz nach dem Training …">${note(s.id)}</textarea>
+    </div>`}
+  </article>`;
+}
+
+function renderHome(){
+  const today=localToday();
+  let next=sessions.find(s=>s.date>=today && !isDone(s.id)) || sessions.find(s=>!isDone(s.id)) || sessions[sessions.length-1];
+  document.getElementById("nextTitle").textContent=next.type;
+  document.getElementById("nextDate").textContent=`${next.day}, ${fmtDate(next.date)} · ${next.time} Uhr`;
+  document.getElementById("nextKm").textContent=String(next.km).replace(".",",")+" km";
+  document.getElementById("nextPace").textContent=(next.pace.match(/\d:\d\d/)||["–"])[0];
+  document.getElementById("nextDuration").textContent=next.duration+" min";
+  document.getElementById("openNext").onclick=()=>{go("plan"); selectedWeek=next.week; renderPlan(); setTimeout(()=>document.querySelector(`[data-id="${next.id}"]`)?.scrollIntoView({behavior:"smooth",block:"center"}),80)};
+
+  const done=sessions.filter(s=>isDone(s.id)).length;
+  const pct=Math.round(done/sessions.length*100);
+  const left=sessions.filter(s=>!isDone(s.id)).reduce((a,b)=>a+b.km,0);
+  document.getElementById("progressFill").style.width=pct+"%";
+  document.getElementById("progressLabel").textContent=pct+" %";
+  document.getElementById("doneCount").textContent=`${done} / ${sessions.length}`;
+  document.getElementById("leftKm").textContent=left.toFixed(1).replace(".",",")+" km";
+
+  const todayD=dObj(today);
+  const current = sessions.find(s=>s.date>=today)?.week || 10;
+  const ws=sessions.filter(s=>s.week===current);
+  document.getElementById("weekLabel").textContent=`Woche ${current} · ${ws.reduce((a,b)=>a+b.km,0).toFixed(0)} km`;
+  document.getElementById("homeWeek").innerHTML=ws.map(s=>sessionCard(s,true)).join("");
+
+  const race=new Date("2026-10-04T09:00:00");
+  const diff=Math.max(0,Math.ceil((race-new Date())/86400000));
+  document.getElementById("countdown").textContent=diff===0?"HEUTE":`${diff} Tage`;
+}
+
+function renderPlan(){
+  const today=localToday();
+  if(!selectedWeek){
+    selectedWeek=(sessions.find(s=>s.date>=today)||sessions[sessions.length-1]).week;
+  }
+  document.getElementById("weekBar").innerHTML=[...new Set(sessions.map(s=>s.week))].map(w=>`<button class="weekbtn ${w===selectedWeek?"active":""}" data-week="${w}">W${w}</button>`).join("");
+  const list=sessions.filter(s=>s.week===selectedWeek);
+  document.getElementById("planList").innerHTML=list.map(s=>sessionCard(s,false)).join("");
+  bindDynamic();
+  document.querySelectorAll(".weekbtn").forEach(b=>b.onclick=()=>{selectedWeek=+b.dataset.week;renderPlan()});
+}
+
+function renderZones(){
+  document.getElementById("zoneGrid").innerHTML=zones.map(z=>`<div class="zone"><b>${z[0]}</b><span>${z[1]} min/km<br>${z[2]} · ${z[3]}</span></div>`).join("");
+}
+function bindDynamic(){
+  document.querySelectorAll("[data-check]").forEach(c=>c.onchange=()=>{state["done_"+c.dataset.check]=c.checked;save();renderHome();renderPlan()});
+  document.querySelectorAll(".detailsBtn").forEach(b=>b.onclick=()=>document.getElementById("details-"+b.dataset.open).classList.toggle("open"));
+  document.querySelectorAll("[data-note]").forEach(t=>t.oninput=()=>{state["note_"+t.dataset.note]=t.value;save()});
+}
+function go(id){
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(id==="plan")renderPlan();
+}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.view));
+
+renderZones(); renderHome(); renderPlan(); bindDynamic();
+</script>
+</body></html>
